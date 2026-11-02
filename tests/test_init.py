@@ -1,6 +1,7 @@
 import unittest
 
 from first_init import my_func
+from app import app
 
 
 class MyTestCase(unittest.TestCase):

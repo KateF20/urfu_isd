@@ -1,0 +1,28 @@
+version: 2.1
+
+orbs:
+  heroku: circleci/heroku@2.0.0
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: python -m pytest
+
+workflows:
+  test-and-deploy:
+    jobs:
+      - test
+      - heroku/deploy-via-git:
+          requires:
+            - test
+          filters:
+            branches:
+              only: main
