@@ -1,0 +1,11 @@
+stages:
+  - test
+
+unit-test-job:
+  stage: test
+  script:
+    - pip install pytest
+    - pytest test_*.py
+
+image:
+    python:3.14
