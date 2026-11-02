@@ -1,9 +1,12 @@
 import unittest
 
+from first_init import my_func
+
 
 class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, False)  # add assertion here
+    def test_my_func(self):
+        self.assertEqual(my_func(1, 2), 3)
+        self.assertEqual(my_func(10, 20), 30)
 
 
 if __name__ == '__main__':
