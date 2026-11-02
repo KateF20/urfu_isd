@@ -11,12 +11,32 @@ pipeline {
     }
 
     stages {
-        stage('Build image') {
+        stage('Lint') {
+            steps {
+                sh '''
+                  docker run --rm -v "$PWD":/app -w /app python:3.12-slim sh -c "
+                    pip install -q flake8 &&
+                    flake8 --exclude=.venv,.git,__pycache__,.idea --max-line-length=120 .
+                  "
+                '''
+            }
+        }
+        stage('Unit tests') {
+            steps {
+                sh '''
+                  docker run --rm -v "$PWD":/app -w /app python:3.12-slim sh -c "
+                    pip install -q -r requirements.txt &&
+                    python -m pytest -v
+                  "
+                '''
+            }
+        }
+        stage('Build') {
             steps {
                 sh 'docker build -t $IMAGE:$BUILD_NUMBER -t $IMAGE:latest .'
             }
         }
-        stage('Push to Docker Hub') {
+        stage('Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub',
                                                   usernameVariable: 'DH_USER',
@@ -25,6 +45,12 @@ pipeline {
                     sh 'docker push $IMAGE:$BUILD_NUMBER'
                     sh 'docker push $IMAGE:latest'
                 }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'docker rm -f urfu-isd-app || true'
+                sh 'docker run -d --name urfu-isd-app -p 8000:8000 $IMAGE:latest'
             }
         }
     }
