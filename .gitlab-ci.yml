@@ -5,7 +5,7 @@ unit-test-job:
   stage: test
   script:
     - pip install pytest
-    - python3 -m pytest test_*.py
+    - python3 -m pytest
 
 image:
     python:3.14
